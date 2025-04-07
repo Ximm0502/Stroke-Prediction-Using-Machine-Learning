@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stroke Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            display: none;
+        }
+        .stroke {
+            background-color: #ffcccc;
+        }
+        .no-stroke {
+            background-color: #ccffcc;
+        }
+        .error {
+            background-color: #ffe6e6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Stroke Prediction</h1>
+        <form id="predictionForm">
+            <div class="form-group">
+                <label for="patient_name">Patient Name:</label>
+                <input type="text" id="patient_name" name="patient_name" required>
+            </div>
+            <div class="form-group">
+                <label for="age">Age:</label>
+                <input type="number" id="age" name="age" min="18" max="90" required>
+            </div>
+            <div class="form-group">
+                <label for="gender">Gender:</label>
+                <select id="gender" name="gender" required>
+                    <option value="1">Male</option>
+                    <option value="0">Female</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="hypertension">Hypertension (0 = No, 1 = Yes):</label>
+                <select id="hypertension" name="hypertension" required>
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="heart_disease">Heart Disease (0 = No, 1 = Yes):</label>
+                <select id="heart_disease" name="heart_disease" required>
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="marital_status">Marital Status:</label>
+                <select id="marital_status" name="marital_status" required>
+                    <option value="0">Divorced</option>
+                    <option value="1">Married</option>
+                    <option value="2">Single</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="work_type">Work Type:</label>
+                <select id="work_type" name="work_type" required>
+                    <option value="0">Government Job</option>
+                    <option value="1">Never Worked</option>
+                    <option value="2">Private</option>
+                    <option value="3">Self-employed</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="residence_type">Residence Type:</label>
+                <select id="residence_type" name="residence_type" required>
+                    <option value="0">Rural</option>
+                    <option value="1">Urban</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="avg_glucose_level">Average Glucose Level:</label>
+                <input type="number" id="avg_glucose_level" name="avg_glucose_level" step="0.01" min="60" max="200" required>
+            </div>
+            <div class="form-group">
+                <label for="bmi">Body Mass Index (BMI):</label>
+                <input type="number" id="bmi" name="bmi" step="0.01" min="15" max="40" required>
+            </div>
+            <div class="form-group">
+                <label for="smoking_status">Smoking Status:</label>
+                <select id="smoking_status" name="smoking_status" required>
+                    <option value="0">Currently Smokes</option>
+                    <option value="1">Formerly Smoked</option>
+                    <option value="2">Non-smoker</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="alcohol_intake">Alcohol Intake:</label>
+                <select id="alcohol_intake" name="alcohol_intake" required>
+                    <option value="0">Frequent Drinker</option>
+                    <option value="1">Never</option>
+                    <option value="2">Rarely</option>
+                    <option value="3">Social Drinker</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="physical_activity">Physical Activity:</label>
+                <select id="physical_activity" name="physical_activity" required>
+                    <option value="0">High</option>
+                    <option value="1">Low</option>
+                    <option value="2">Moderate</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="stroke_history">Stroke History (0 = No, 1 = Yes):</label>
+                <select id="stroke_history" name="stroke_history" required>
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="family_history">Family History of Stroke:</label>
+                <select id="family_history" name="family_history" required>
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="dietary_habits">Dietary Habits:</label>
+                <select id="dietary_habits" name="dietary_habits" required>
+                    <option value="0">Gluten-Free</option>
+                    <option value="1">Keto</option>
+                    <option value="2">Non-Vegetarian</option>
+                    <option value="3">Paleo</option>
+                    <option value="4">Pescatarian</option>
+                    <option value="5">Vegan</option>
+                    <option value="6">Vegetarian</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="stress_levels">Stress Levels (0-10):</label>
+                <input type="number" id="stress_levels" name="stress_levels" step="0.01" min="0" max="10" required>
+            </div>
+            <div class="form-group">
+                <label for="blood_pressure_levels">Blood Pressure Levels (e.g., "120/80"):</label>
+                <input type="text" id="blood_pressure_levels" name="blood_pressure_levels" placeholder="Systolic/Diastolic" required>
+            </div>
+            <div class="form-group">
+                <label for="cholesterol_levels">Cholesterol Levels (e.g., "HDL: 50, LDL: 120"):</label>
+                <input type="text" id="cholesterol_levels" name="cholesterol_levels" placeholder="HDL: value, LDL: value" required>
+            </div>
+            <div class="form-group">
+                <label>Symptoms (Select all that apply):</label>
+                <input type="checkbox" id="blurred_vision" name="blurred_vision" value="1"> Blurred Vision<br>
+                <input type="checkbox" id="confusion" name="confusion" value="1"> Confusion<br>
+                <input type="checkbox" id="difficulty_speaking" name="difficulty_speaking" value="1"> Difficulty Speaking<br>
+                <input type="checkbox" id="dizziness" name="dizziness" value="1"> Dizziness<br>
+                <input type="checkbox" id="headache" name="headache" value="1"> Headache<br>
+                <input type="checkbox" id="loss_of_balance" name="loss_of_balance" value="1"> Loss of Balance<br>
+                <input type="checkbox" id="numbness" name="numbness" value="1"> Numbness<br>
+                <input type="checkbox" id="seizures" name="seizures" value="1"> Seizures<br>
+                <input type="checkbox" id="severe_fatigue" name="severe_fatigue" value="1"> Severe Fatigue<br>
+                <input type="checkbox" id="weakness" name="weakness" value="1"> Weakness<br>
+            </div>
+            <button type="submit">Predict</button>
+        </form>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        document.getElementById('predictionForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const formData = {
+                "Gender": parseInt(document.getElementById('gender').value),
+                "Marital Status": parseInt(document.getElementById('marital_status').value),
+                "Work Type": parseInt(document.getElementById('work_type').value),
+                "Residence Type": parseInt(document.getElementById('residence_type').value),
+                "Average Glucose Level": parseFloat(document.getElementById('avg_glucose_level').value),
+                "Body Mass Index (BMI)": parseFloat(document.getElementById('bmi').value),
+                "Smoking Status": parseInt(document.getElementById('smoking_status').value),
+                "Alcohol Intake": parseInt(document.getElementById('alcohol_intake').value),
+                "Physical Activity": parseInt(document.getElementById('physical_activity').value),
+                "Stroke History": parseInt(document.getElementById('stroke_history').value),
+                "Family History of Stroke": parseInt(document.getElementById('family_history').value),
+                "Dietary Habits": parseInt(document.getElementById('dietary_habits').value),
+                "Stress Levels": parseFloat(document.getElementById('stress_levels').value),
+                "Blood Pressure Levels": document.getElementById('blood_pressure_levels').value,
+                "Cholesterol Levels": document.getElementById('cholesterol_levels').value,
+                "Blurred Vision": document.getElementById('blurred_vision').checked ? 1 : 0,
+                "Confusion": document.getElementById('confusion').checked ? 1 : 0,
+                "Difficulty Speaking": document.getElementById('difficulty_speaking').checked ? 1 : 0,
+                "Dizziness": document.getElementById('dizziness').checked ? 1 : 0,
+                "Headache": document.getElementById('headache').checked ? 1 : 0,
+                "Loss of Balance": document.getElementById('loss_of_balance').checked ? 1 : 0,
+                "Numbness": document.getElementById('numbness').checked ? 1 : 0,
+                "Seizures": document.getElementById('seizures').checked ? 1 : 0,
+                "Severe Fatigue": document.getElementById('severe_fatigue').checked ? 1 : 0,
+                "Weakness": document.getElementById('weakness').checked ? 1 : 0
+            };
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+                const resultDiv = document.getElementById('result');
+                resultDiv.style.display = 'block';
+                if (response.ok) {
+                    resultDiv.textContent = result.prediction === 1 ? 'Stroke Risk Detected' : 'No Stroke Risk';
+                    resultDiv.className = result.prediction === 1 ? 'stroke' : 'no-stroke';
+                } else {
+                    resultDiv.textContent = `Error: ${result.error}`;
+                    resultDiv.className = 'error';
+                }
+            } catch (error) {
+                console.error('Fetch error:', error);
+                const resultDiv = document.getElementById('result');
+                resultDiv.style.display = 'block';
+                resultDiv.textContent = 'Network error occurred. Please check your connection and try again.';
+                resultDiv.className = 'error';
+            }
+        });
+    </script>
+</body>
+</html>
